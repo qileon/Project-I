@@ -1,7 +1,9 @@
 # Project-I
 A program that reads a CSV file that contains grades for assignments, midterms, and finals for a class of students.
+
 -> At first, you need to have a CSV file called "grades.csv"
 here is the data i used in grades.csv:
+
 ID,Name,Surname,Assignment,Midterm,Final
 20221678,Noah,Hall,84,93,82
 20239921,David,White,92,89,87
