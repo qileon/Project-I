@@ -36,6 +36,8 @@ ID,Name,Surname,Assignment,Midterm,Final
 
 20234567,Emily,Davis,86,97,78 
 
+Report for the Project:
+
 1- Introduction 
 
 Our project is about a Python program that manages student grades stored in a CSV file. The program reads the grades, calculates total scores, and saves the results back into a new CSV file. 
