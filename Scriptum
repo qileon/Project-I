@@ -1,0 +1,111 @@
+# import the csv module for handling CSV files
+import csv
+# import the os module for working with the operating system
+import os
+
+# first row of the CSV file will be treated as column names
+header = None
+
+# calculate total grades for a student by averaging the scores of assignments, midterms, and finals
+def calculate_total_grade(grades):
+    assignments, midterms, finals = grades[0], grades[1], grades[2]
+    
+# define weights for assignments, midterms, and finals
+    assignment_weight = 0.3
+    midterm_weight = 0.3
+    final_weight = 0.4
+    
+# calculate the weighted average
+    total_grade = (assignments * assignment_weight + midterms * midterm_weight + finals * final_weight) / (assignment_weight + midterm_weight + final_weight)
+    
+    return total_grade
+
+# converts numeric grades to letter grades based on a predefined scale
+def convert_to_letter_grade(grade):
+    letter_grades = {
+        90: 'AA',
+        85: 'BA',
+        80: 'BB',
+        75: 'CB',
+        70: 'CC',
+        60: 'DC',
+        50: 'DD',
+        0: 'FF',
+    }
+
+# check if the given numeric 'grade' is equal to or greater than the current minimum score
+    for minimum_score, letter_grade in letter_grades.items():
+        if grade >= minimum_score:
+            return letter_grade
+
+# gets the letter grade for the given numeric 'grade'
+def calculate_letter_grade(grade):
+    letter_grade = convert_to_letter_grade(grade)
+    return letter_grade
+
+# analyze data from "grades.csv" and save results to "graded_students.csv"
+def process_data():
+    input_file = "grades.csv"
+    output_file_csv = "graded_students.csv"
+    students_with_missing_grades = []  # keeps track of student IDs with missing grades
+
+# if input file does not exist, print an error message and exit the function
+    if not os.path.exists(input_file):
+        print(f"Error: {input_file} does not exist.")
+        return
+
+# collects data from "grades.csv" and stores it in the 'data' list
+    data = []
+    with open(input_file, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+# check if the grade is empty, and if so, add the student ID to the list
+            grades = [row['Assignment'].strip(), row['Midterm'].strip(), row['Final'].strip()]
+            if '' in grades:
+                student_id = row.get('ID', 'Unknown')
+                students_with_missing_grades.append(student_id)
+            else:
+                data.append(row)
+
+# set 'header' if data exists, else print an error and exit
+    if data:
+        header = list(data[0].keys())
+    else:
+        print("Error: Input file is empty.")
+        return
+
+# add numeric and letter grades to the header for calculated grades
+    header.extend(['Numeric Grade', 'Letter Grade'])
+
+# check if there are students with missing grades and print the error message
+    if students_with_missing_grades:
+        print(f"Warning: Grade(s) are missing for student(s) with IDs {', '.join(students_with_missing_grades)}. Student(s) with missing grade(s) won't be included.")
+
+# calculate numeric and letter grades for each student and update the 'data' list
+    for row in data:
+        grades = [float(row['Assignment']), float(row['Midterm']), float(row['Final'])]
+        total_grade = calculate_total_grade(grades)
+        letter_grade = calculate_letter_grade(total_grade)
+        row['Numeric Grade'] = str(round(total_grade, 1))
+        row['Letter Grade'] = letter_grade
+
+# write CSV file with improved formatting
+    with open(output_file_csv, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=header, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)
+
+# define a process called 'main'
+def main():
+# reads student grades from "grades.csv," calculates grades, and writes the updated data to "graded_students.csv"
+    process_data()
+
+# print a completion message with a decorative separator
+    print("\n" + "=" * 59)
+    print("Processed student grades and updated 'graded_students.csv'.")
+    print("=" * 59 + "\n")
+
+# check if this script is the main one being used
+if __name__ == '__main__':
+    main()
